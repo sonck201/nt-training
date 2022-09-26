@@ -1,0 +1,16 @@
+{
+  "name": "nt-training",
+  "version": "1.0.0",
+  "main": "app.js",
+  "repository": "git@github.com:sonck201/nt-training.git",
+  "author": "Iamck <thanhson_it201@yahoo.com>",
+  "license": "UNLICENSE",
+  "private": "true",
+  "scripts": {
+    "start": "node app.js"
+  },
+  "dependencies": {
+    "kafkajs": "^2.2.0",
+    "random-animal-name": "^0.1.1"
+  }
+}
