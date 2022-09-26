@@ -1,0 +1,40 @@
+@startuml C4_L1_BooksStore
+!include https://raw.githubusercontent.com/plantuml-stdlib/C4-PlantUML/master/C4_Container.puml
+
+Person(annonymous, "Public user")
+Person(user, "Authorized user")
+
+Container_Boundary(booksStore, "Books store container") {
+  Container(searchWebApi, "Search web API", "GO")
+  Container(adminWebApi, "Admin web API", "GO")
+  Container(publicWebApi, "Public web API")
+  
+  ContainerQueue(kafka, "MQ", "Apache Kafka 3.0", "Book-related domain events")
+  Container(eventConsumer, "Event consumer")
+
+  ContainerDb(elasticSearch, "Full-text search", "ElasticSearch - Stores searchabled books details")
+  
+  ContainerDb(postgres, "RDS", "PostgresSQL - Stores books details")
+  
+  ContainerDb(memcached, "Cache", "Memcahced - Cache books details")
+
+  Container(publisherRecurrentUpdater, "Publisher recurrent updater", "Listening to extenal events coming from Publisher Systems, Updates read/write RDS with detail from Publisher system")
+}
+
+Container_Ext(authorization, "Authorization system", "For authorization purposes")
+Container_Ext(publisher, "Publisher system", "Giving details about books published by them")
+
+Rel(user, searchWebApi, "HTTPS", "Search books records")
+Rel(searchWebApi, authorization, "Uses", "Authorized by authorized system")
+Rel(searchWebApi, elasticSearch, "Uses", "Searchs read-only records")
+
+Rel(user, adminWebApi, "HTTPS", "Administering books records")
+Rel(adminWebApi, authorization, "Uses", "Authorized by authorized system")
+Rel(adminWebApi, postgres, "Uses", "Reads/Writes for administering records")
+Rel(adminWebApi, kafka, "Uses", "Publishes events to Kafka container")
+
+Rel(annonymous, publicWebApi, "HTTPS", "Gets books records")
+Rel(publicWebApi, postgres, "Uses", "Reads/Writes data from/to RDS")
+Rel(publicWebApi, memcached, "Uses", "Reads/Writes data from/to Cache")
+
+@enduml
