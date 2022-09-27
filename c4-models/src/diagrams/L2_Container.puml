@@ -1,5 +1,9 @@
-@startuml C4_L1_BooksStore
+@startuml C4_L2_BooksStore
 !include https://raw.githubusercontent.com/plantuml-stdlib/C4-PlantUML/master/C4_Container.puml
+
+SHOW_PERSON_OUTLINE()
+
+title Book store containers
 
 Person(annonymous, "Public user")
 Person(user, "Authorized user")
@@ -13,11 +17,11 @@ Container_Boundary(booksStore, "Books store container") {
 
   Container(elasticEventConsumer, "Elastic event consumer")
 
-  ContainerDb(elasticSearch, "Full-text search", "ElasticSearch - Stores searchabled books details")
+  ContainerDb(elasticSearch, "Full-text search", "ElasticSearch", "Stores searchabled books details")
 
-  ContainerDb(postgres, "RDS", "PostgresSQL - Stores books details")
+  ContainerDb(postgres, "RDS", "PostgresSQL", "Stores books details")
 
-  ContainerDb(memcached, "Cache", "Memcahced - Cache books details")
+  ContainerDb(memcached, "Cache", "Memcahced", "Cache books details")
 
   Container(publisherRecurrentUpdater, "Publisher recurrent updater", "Listening to extenal events coming from Publisher Systems, Updates read/write RDS with detail from Publisher system")
 }
