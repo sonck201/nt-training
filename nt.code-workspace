@@ -3,6 +3,13 @@
     {
       "path": "kafka",
       "name": "Kafka"
+    },
+    {
+      "path": "c4-models",
+      "name": "C4 models"
     }
-  ]
+  ],
+  "settings": {
+    "plantuml.exportOutDir": "out",
+  }
 }
