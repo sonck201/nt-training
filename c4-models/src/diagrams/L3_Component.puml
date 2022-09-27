@@ -1,0 +1,52 @@
+@startuml C4_L3_AdminWebApi
+!include https://raw.githubusercontent.com/plantuml-stdlib/C4-PlantUML/master/C4_Container.puml
+!include https://raw.githubusercontent.com/plantuml-stdlib/C4-PlantUML/master/C4_Component.puml
+
+title Admin Web API
+
+Container_Boundary(adminWebApi, "Admin web API") {
+    Component(create, "Create book controller")
+    Component(search, "Search books controller")
+    Component(read, "Read book controller")
+    Component(update, "Update book controller")
+    Component(delete, "Delete book controller")
+
+    Component(publisher, "Event publisher", "Publish book-related event")
+}
+
+ContainerDb(elasticSearch, "Full-text search", "ElasticSearch", "Stores searchabled books details")
+
+ContainerDb(postgres, "RDS", "PostgresSQL", "Stores books details")
+
+ContainerDb(memcached, "Cache", "Memcahced", "Cache books details")
+ContainerDb(elasticSearch, "Full-text search", "ElasticSearch", "Stores searchabled books details")
+
+ContainerQueue(kafka, "MQ", "Apache Kafka 3.0", "Book-related domain events")
+
+Container(elasticEventConsumer, "Elastic event consumer")
+
+Container_Ext(authorization, "Authorizer", "Authorizing users")
+ContainerQueue_Ext(kafkaExt, "MQ", "Apache Kafka 3.0", "External book kafka")
+
+Rel(create, postgres, "Uses", "Creates book information")
+Rel(create, kafka, "Uses", "Sends message creating book")
+
+Rel(kafka, elasticEventConsumer, "Uses", "Comsumes events to Kafka container")
+Rel(elasticEventConsumer, memcached, "Uses", "Reads/Writes data from/to Cache")
+Rel(elasticEventConsumer, elasticSearch, "Uses", "Reads/Writes data from/to Cache")
+
+Rel(search, elasticSearch, "Uses", "Searchs read-only records")
+
+Rel(read, memcached, "Uses", "Read book detail")
+
+Rel(update, postgres, "Uses", "Updates book information")
+Rel(update, kafka, "Uses", "Sends message updating book")
+
+Rel(delete, postgres, "Uses", "Delete book record")
+Rel(delete, kafka, "Uses", "Sends message deleting book")
+
+Rel(adminWebApi, authorization, "Uses", "Authorized by authorized system")
+
+Rel(publisher, kafkaExt, "Uses", "Publishes events to external Kafka container")
+
+@enduml
